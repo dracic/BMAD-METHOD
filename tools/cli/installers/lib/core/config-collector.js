@@ -1233,7 +1233,7 @@ class ConfigCollector {
       let hasOutput = false;
       for (const [configKey, valueMessages] of Object.entries(notes)) {
         const selectedValue = config[configKey];
-        if (!selectedValue || !valueMessages[selectedValue]) continue;
+        if (selectedValue === undefined || selectedValue === null || !valueMessages[selectedValue]) continue;
 
         if (hasOutput) await prompts.log.message('');
         hasOutput = true;

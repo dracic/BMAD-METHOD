@@ -3,6 +3,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { execSync } = require('node:child_process');
 const prompts = require('./lib/prompts');
+const rt = require('./lib/runtime-detect');
 
 // The installer flow uses many sequential @clack/prompts, each adding keypress
 // listeners to stdin. Raise the limit to avoid spurious EventEmitter warnings.
@@ -28,7 +29,7 @@ async function checkForUpdate() {
       packageJson.version.includes('rc');
     const tag = isBeta ? 'beta' : 'latest';
 
-    const result = execSync(`npm view ${packageName}@${tag} version`, {
+    const result = execSync(rt.viewCmd(`${packageName}@${tag}`, 'version'), {
       encoding: 'utf8',
       stdio: 'pipe',
       timeout: 5000,
@@ -36,12 +37,19 @@ async function checkForUpdate() {
 
     if (result && result !== packageJson.version) {
       const color = await prompts.getColor();
-      const updateMsg = [
-        `You are using version ${packageJson.version} but ${result} is available.`,
-        '',
-        'To update, exit and first run:',
-        `  npm cache clean --force && npx bmad-method@${tag} install`,
-      ].join('\n');
+      const updateMsg = rt.isBun
+        ? [
+            `You are using version ${packageJson.version} but ${result} is available.`,
+            '',
+            'To update, exit and run:',
+            `  ${rt.pmx} bmad-method@${tag} install`,
+          ].join('\n')
+        : [
+            `You are using version ${packageJson.version} but ${result} is available.`,
+            '',
+            'To update, exit and first run:',
+            `  npm cache clean --force && npx bmad-method@${tag} install`,
+          ].join('\n');
       await prompts.box(updateMsg, 'Update Available', {
         rounded: true,
         formatBorder: color.yellow,

@@ -13,7 +13,11 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import { getSiteUrl } from '../website/src/lib/site-url.mjs';
+
+const _require = createRequire(import.meta.url);
+const rt = _require('./cli/lib/runtime-detect');
 
 // =============================================================================
 // Configuration
@@ -323,7 +327,7 @@ function validateLlmSize(content) {
  */
 function runAstroBuild() {
   console.log('  → Running astro build...');
-  execSync('npx astro build --root website', {
+  execSync(`${rt.pmx} astro build --root website`, {
     cwd: PROJECT_ROOT,
     stdio: 'inherit',
     env: {
@@ -452,7 +456,7 @@ function checkDocLinks() {
   printHeader('Checking documentation links');
 
   try {
-    execSync('node tools/validate-doc-links.js', {
+    execSync(`"${rt.runtime}" "tools/validate-doc-links.js"`, {
       cwd: PROJECT_ROOT,
       stdio: 'inherit',
     });

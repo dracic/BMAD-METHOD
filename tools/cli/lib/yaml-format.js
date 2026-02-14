@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const yaml = require('yaml');
 const { execSync } = require('node:child_process');
+const rt = require('./runtime-detect');
 
 // Dynamic import for ES module
 let chalk;
@@ -143,7 +144,7 @@ async function lintYamlFile(filePath) {
   await initializeModules();
   try {
     // Use yaml-lint for additional validation
-    execSync(`npx yaml-lint "${filePath}"`, { stdio: 'pipe' });
+    execSync(`${rt.pmx} yaml-lint "${filePath}"`, { stdio: 'pipe' });
     return true;
   } catch (error) {
     console.error(chalk.red(`❌ YAML lint error in ${filePath}:`));
@@ -158,7 +159,7 @@ async function main() {
   const glob = require('glob');
 
   if (arguments_.length === 0) {
-    console.error('Usage: node yaml-format.js <file1> [file2] ...');
+    console.error(`Usage: ${rt.runtimeName} yaml-format.js <file1> [file2] ...`);
     process.exit(1);
   }
 

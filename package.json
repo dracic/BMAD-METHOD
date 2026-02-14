@@ -101,6 +101,7 @@
     "yaml-lint": "^1.7.0"
   },
   "engines": {
+    "bun": ">=1.2.5",
     "node": ">=20.0.0"
   },
   "publishConfig": {

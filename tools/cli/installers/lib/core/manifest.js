@@ -928,9 +928,10 @@ class Manifest {
       const https = require('node:https');
       const { execSync } = require('node:child_process');
 
-      // Try using npm view first (more reliable)
+      // Try using npm view / bun info first (more reliable)
+      const rt = require('../../../lib/runtime-detect');
       try {
-        const result = execSync(`npm view ${packageName} version`, {
+        const result = execSync(rt.viewCmd(packageName, 'version'), {
           encoding: 'utf8',
           stdio: 'pipe',
           timeout: 10_000,

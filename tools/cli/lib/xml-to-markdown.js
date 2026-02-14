@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const rt = require('./runtime-detect');
 
 function convertXmlToMarkdown(xmlFilePath) {
   if (!xmlFilePath.endsWith('.xml')) {
@@ -55,7 +56,7 @@ function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    console.error('Usage: node xml-to-markdown.js <xml-file-path>');
+    console.error(`Usage: ${rt.runtimeName} xml-to-markdown.js <xml-file-path>`);
     process.exit(1);
   }
 

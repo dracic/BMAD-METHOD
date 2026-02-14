@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
 const prompts = require('../../../lib/prompts');
+const rt = require('../../../lib/runtime-detect');
 const { XmlHandler } = require('../../../lib/xml-handler');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { filterCustomizationData } = require('../../../lib/agent/compiler');
@@ -444,7 +445,7 @@ class ModuleManager {
         const installSpinner = await createSpinner();
         installSpinner.start(`Installing dependencies for ${moduleInfo.name}...`);
         try {
-          execSync('npm install --omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps', {
+          execSync(rt.installCmd('--omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps'), {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
             timeout: 120_000, // 2 minute timeout
@@ -470,7 +471,7 @@ class ModuleManager {
           const installSpinner = await createSpinner();
           installSpinner.start(`Installing dependencies for ${moduleInfo.name}...`);
           try {
-            execSync('npm install --omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps', {
+            execSync(rt.installCmd('--omit=dev --no-audit --no-fund --no-progress --legacy-peer-deps'), {
               cwd: moduleCacheDir,
               stdio: ['ignore', 'pipe', 'pipe'],
               timeout: 120_000, // 2 minute timeout
