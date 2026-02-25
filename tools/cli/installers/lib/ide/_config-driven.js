@@ -453,6 +453,14 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {string} projectDir - Project directory
    */
   async cleanup(projectDir, options = {}) {
+    // Migrate legacy target directories (e.g. .opencode/agent → .opencode/agents)
+    if (this.installerConfig?.legacy_targets) {
+      for (const legacyDir of this.installerConfig.legacy_targets) {
+        await this.cleanupTarget(projectDir, legacyDir, options);
+        await this.removeEmptyParents(projectDir, legacyDir);
+      }
+    }
+
     // Clean all target directories
     if (this.installerConfig?.targets) {
       const parentDirs = new Set();
@@ -544,7 +552,10 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       last = current;
       const fullPath = path.join(projectDir, current);
       try {
-        if (!(await fs.pathExists(fullPath))) break;
+        if (!(await fs.pathExists(fullPath))) {
+          current = path.dirname(current);
+          continue;
+        }
         const remaining = await fs.readdir(fullPath);
         if (remaining.length > 0) break;
         await fs.rmdir(fullPath);

@@ -131,11 +131,14 @@ platforms:
     category: ide
     description: "OpenCode terminal coding assistant"
     installer:
+      legacy_targets:
+        - .opencode/agent
+        - .opencode/command
       targets:
-        - target_dir: .opencode/agent
+        - target_dir: .opencode/agents
           template_type: opencode
           artifact_types: [agents]
-        - target_dir: .opencode/command
+        - target_dir: .opencode/commands
           template_type: opencode
           artifact_types: [workflows, tasks, tools]
 
