@@ -5,6 +5,7 @@ const prompts = require('../../../lib/prompts');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
+const { toDashPath } = require('./shared/path-utils');
 
 /**
  * Config-driven IDE setup handler
@@ -390,8 +391,14 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
       // No default
     }
 
+    // Compute FQDN name from relativePath using same logic as generateFilename()
+    const fqdnFilename = toDashPath(artifact.relativePath || '');
+    const fqdnName = fqdnFilename.replace(/\.md$/, '');
+    // Fall back to bare name if toDashPath couldn't resolve (returns 'bmad-unknown')
+    const resolvedName = fqdnName && fqdnName !== 'bmad-unknown' ? fqdnName : artifact.name || '';
+
     let rendered = template
-      .replaceAll('{{name}}', artifact.name || '')
+      .replaceAll('{{name}}', resolvedName)
       .replaceAll('{{module}}', artifact.module || 'core')
       .replaceAll('{{path}}', pathToUse)
       .replaceAll('{{description}}', artifact.description || `${artifact.name} ${artifact.type || ''}`)
@@ -414,8 +421,6 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @returns {string} Generated filename
    */
   generateFilename(artifact, artifactType, extension = '.md') {
-    const { toDashPath } = require('./shared/path-utils');
-
     // Reuse central logic to ensure consistent naming conventions
     const standardName = toDashPath(artifact.relativePath);
 

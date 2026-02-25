@@ -151,9 +151,13 @@ class WorkflowCommandGenerator {
       }
     }
 
+    // Compute FQDN name from module/workflow using same logic as generateFilename()
+    const fqdnFilename = toDashPath(`${workflow.module}/workflows/${workflow.name}.md`);
+    const fqdnName = fqdnFilename.replace(/\.md$/, '');
+
     // Replace template variables
     return template
-      .replaceAll('{{name}}', workflow.name)
+      .replaceAll('{{name}}', fqdnName)
       .replaceAll('{{module}}', workflow.module)
       .replaceAll('{{description}}', workflow.description)
       .replaceAll('{{workflow_path}}', workflowPath)

@@ -74,8 +74,11 @@ class AgentCommandGenerator {
     // Replace template variables
     // Use relativePath if available (for nested agents), otherwise just name with .md
     const agentPathInModule = agent.relativePath || `${agent.name}.md`;
+    // Compute FQDN name from relativePath using same logic as generateFilename()
+    const fqdnFilename = toDashPath(`${agent.module}/agents/${agentPathInModule}`);
+    const fqdnName = fqdnFilename.replace(/\.md$/, '');
     return template
-      .replaceAll('{{name}}', agent.name)
+      .replaceAll('{{name}}', fqdnName)
       .replaceAll('{{module}}', agent.module)
       .replaceAll('{{path}}', agentPathInModule)
       .replaceAll('{{description}}', agent.description || `${agent.name} agent`)
