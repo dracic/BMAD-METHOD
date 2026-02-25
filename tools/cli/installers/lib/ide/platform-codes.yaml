@@ -194,6 +194,8 @@ platforms:
 #   template_type: string                 # Default template type to use
 #   header_template: string (optional)    # Override for header/frontmatter template
 #   body_template: string (optional)      # Override for body/content template
+#   legacy_targets: array (optional)      # Old target dirs to clean up on reinstall (migration)
+#     - string                            # Relative path, e.g. .opencode/agent
 #   targets: array (optional)             # For multi-target installations
 #     - target_dir: string
 #       template_type: string

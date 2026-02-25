@@ -455,6 +455,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   async cleanup(projectDir, options = {}) {
     // Migrate legacy target directories (e.g. .opencode/agent → .opencode/agents)
     if (this.installerConfig?.legacy_targets) {
+      if (!options.silent) await prompts.log.message('  Migrating legacy directories...');
       for (const legacyDir of this.installerConfig.legacy_targets) {
         await this.cleanupTarget(projectDir, legacyDir, options);
         await this.removeEmptyParents(projectDir, legacyDir);
@@ -540,17 +541,20 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     }
   }
   /**
-   * Recursively remove empty directories walking up from dir toward projectDir
+   * Walk up ancestor directories from relativeDir toward projectDir, removing each if empty
    * Stops at projectDir boundary — never removes projectDir itself
    * @param {string} projectDir - Project root (boundary)
    * @param {string} relativeDir - Relative directory to start from
    */
   async removeEmptyParents(projectDir, relativeDir) {
+    const resolvedProject = path.resolve(projectDir);
     let current = relativeDir;
     let last = null;
     while (current && current !== '.' && current !== last) {
       last = current;
-      const fullPath = path.join(projectDir, current);
+      const fullPath = path.resolve(projectDir, current);
+      // Boundary guard: never traverse outside projectDir
+      if (!fullPath.startsWith(resolvedProject + path.sep) && fullPath !== resolvedProject) break;
       try {
         if (!(await fs.pathExists(fullPath))) {
           current = path.dirname(current);
